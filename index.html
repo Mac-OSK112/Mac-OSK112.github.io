@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BDC & Insight Apps Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; color: #333; max-width: 800px; margin:auto;}
+    h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+    .form-row { display: flex; align-items: center; margin-bottom: 10px; flex-wrap: wrap;}
+    .form-row label { flex: 1 1 60%; min-width: 200px; }
+    .form-row input[type="number"] { flex: 1 1 30%; padding: 5px; min-width: 100px; }
+    .checkbox-group { margin-bottom: 20px; }
+    .checkbox-group label { display: block; margin-bottom: 5px; }
+    .disabled { color: #999; }
+    #fueInputContainer { margin-top: 10px; }
+    .output { border-top: 1px solid #ccc; padding-top: 10px; margin-top: 20px; }
+    .sub-item { margin-left: 20px; }
+    @media (max-width: 600px) {
+      .form-row { flex-direction: column; align-items: flex-start; }
+      .form-row label, .form-row input[type="number"] { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <h2>Input</h2>
+  <div>
+    <h3>Insight Apps</h3>
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="coreAnalytics"> Core Enterprise Analytics</label>
+      <div id="fueInputContainer" style="display:none;">
+        <div class="form-row">
+          <label>RISE PCE (FUE):</label>
+          <input type="number" id="fue" min="0">
+        </div>
+      </div>
+      <label class="disabled"><input type="checkbox" disabled> People Analytics (Coming Soon)</label>
+      <label class="disabled"><input type="checkbox" disabled> Spend Analytics (Coming Soon)</label>
+      <label class="disabled"><input type="checkbox" disabled> Supply Chain Analytics (Coming Soon)</label>
+      <label class="disabled"><input type="checkbox" disabled> Customer Analytics (Coming Soon)</label>
+      <label class="disabled"><input type="checkbox" disabled> Finance Analytics (Coming Soon)</label>
+    </div>
+
+    <h3>BDC Core Capacity</h3>
+    <div class="form-row"><label>Datasphere Production (CU):</label><input type="number" id="dspProd" min="0"></div>
+    <div class="form-row"><label>Datasphere QA (CU):</label><input type="number" id="dspQA" min="0"></div>
+    <div class="form-row"><label>Datasphere DEV (CU):</label><input type="number" id="dspDev" min="0"></div>
+    <div class="form-row"><label>SAC BI (Users, min 25):</label><input type="number" id="sacBI" min="0"></div>
+    <div class="form-row"><label>SAC Planning Standard (Users, min 10):</label><input type="number" id="sacStd" min="0"></div>
+    <div class="form-row"><label>SAC Planning Professional (Users, min 1):</label><input type="number" id="sacPro" min="0"></div>
+    <div class="form-row"><label>SAC Test tenant (Users, min 20):</label><input type="number" id="sacTest" min="0"></div>
+    <div class="form-row"><label>BW PCE (CU):</label><input type="number" id="bwPce" min="0"></div>
+  </div>
+
+  <h2>Output</h2>
+  <div id="output" class="output"></div>
+
+  <script>
+    const fueTiers = [
+      { lower:60, upper:135, units:15600 },
+      { lower:136, upper:550, units:30500 },
+      { lower:551, upper:1000, units:39800 },
+      { lower:1001, upper:2000, units:54500 },
+      { lower:2001, upper:4000, units:69200 },
+      { lower:4001, upper:6000, units:69300 },
+      { lower:6001, upper:12000, units:93300 },
+      { lower:12001, upper:25000, units:159900 },
+      { lower:25001, upper:Infinity, units:221200 }
+    ];
+
+    const sacBI = [
+      { min:25, max:200, value:38.63 },
+      { min:201, max:500, value:21.6 },
+      { min:501, max:1000, value:17.38 },
+      { min:1001, max:3000, value:15.95 },
+      { min:3001, max:5000, value:12.64 },
+      { min:5001, max:Infinity, value:10.54 }
+    ];
+    const sacStd = [
+      { min:10, max:200, value:119.80 },
+      { min:201, max:500, value:57.98 },
+      { min:501, max:1000, value:46.7 },
+      { min:1001, max:Infinity, value:41.57 }
+    ];
+    const sacPro = [{ min:1, max:Infinity, value:820.43 }];
+    const sacTest = [{ min:20, max:Infinity, value:47.05 }];
+
+    function getTierUnits(fue) {
+      for (const tier of fueTiers) {
+        if (fue >= tier.lower && fue <= tier.upper) return tier.units;
+      }
+      return 0;
+    }
+
+    function calculateSAC(users, table) {
+      if (users <= 0) return 0;
+      for (const row of table) {
+        if (users >= row.min && users <= row.max) return users * row.value;
+      }
+      return 0;
+    }
+
+    function calculate() {
+      const checked = document.getElementById('coreAnalytics').checked;
+      const fue = parseInt(document.getElementById('fue').value) || 0;
+      const dspProd = parseInt(document.getElementById('dspProd').value) || 0;
+      const dspQA = parseInt(document.getElementById('dspQA').value) || 0;
+      const dspDev = parseInt(document.getElementById('dspDev').value) || 0;
+      const sacBIU = parseInt(document.getElementById('sacBI').value) || 0;
+      const sacStdU = parseInt(document.getElementById('sacStd').value) || 0;
+      const sacProU = parseInt(document.getElementById('sacPro').value) || 0;
+      const sacTestU = parseInt(document.getElementById('sacTest').value) || 0;
+      const bwPce = parseInt(document.getElementById('bwPce').value) || 0;
+
+      const autoAttach = checked ? getTierUnits(fue) : 0;
+      const sacBICU = calculateSAC(sacBIU, sacBI);
+      const sacStdCU = calculateSAC(sacStdU, sacStd);
+      const sacProCU = calculateSAC(sacProU, sacPro);
+      const sacTestCU = calculateSAC(sacTestU, sacTest);
+      const dspCU = dspProd + dspQA + dspDev;
+
+      const bdcCU = autoAttach + dspCU + sacBICU + sacStdCU + sacProCU + sacTestCU + bwPce;
+
+      let html = '';
+      if (checked && fue > 0) {
+        html += `<p>8019233 : Insight App - Core Enterprise Analytics (FUE) = ${fue}</p>`;
+      }
+      html += `<p>8019271 : SAP Business Data Cloud Core Capacity (CU) = ${bdcCU}</p>`;
+      html += `<div class="sub-item"> - Auto-Attach of BDC CU based on Tier (CU): ${autoAttach}</div>`;
+      html += `<div class="sub-item"> - Datasphere (CU): ${dspCU}</div>`;
+      html += `<div class="sub-item"> - SAC BI (CU): ${sacBICU}</div>`;
+      html += `<div class="sub-item"> - SAC Planning Standard (CU): ${sacStdCU}</div>`;
+      html += `<div class="sub-item"> - SAC Planning Professional (CU): ${sacProCU}</div>`;
+      html += `<div class="sub-item"> - SAC Test tenant (CU): ${sacTestCU}</div>`;
+      html += `<div class="sub-item"> - BW PCE (CU): ${bwPce}</div>`;
+
+      document.getElementById('output').innerHTML = html;
+    }
+
+    document.getElementById('coreAnalytics').addEventListener('change', (e) => {
+      document.getElementById('fueInputContainer').style.display = e.target.checked ? 'block' : 'none';
+      calculate();
+    });
+
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', calculate);
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
