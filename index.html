@@ -1,152 +1,580 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BDC & Insight Apps Calculator</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; color: #333; max-width: 800px; margin:auto;}
-    h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-    .form-row { display: flex; align-items: center; margin-bottom: 10px; flex-wrap: wrap;}
-    .form-row label { flex: 1 1 60%; min-width: 200px; }
-    .form-row input[type="number"] { flex: 1 1 30%; padding: 5px; min-width: 100px; }
-    .checkbox-group { margin-bottom: 20px; }
-    .checkbox-group label { display: block; margin-bottom: 5px; }
-    .disabled { color: #999; }
-    #fueInputContainer { margin-top: 10px; }
-    .output { border-top: 1px solid #ccc; padding-top: 10px; margin-top: 20px; }
-    .sub-item { margin-left: 20px; }
-    @media (max-width: 600px) {
-      .form-row { flex-direction: column; align-items: flex-start; }
-      .form-row label, .form-row input[type="number"] { width: 100%; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insight Apps & BDC Calculator</title>
+    <style>
+        /* --- General Styling --- */
+        :root {
+            --primary-bg: #e0f7fa; /* Light cyan */
+            --secondary-bg: #b2ebf2; /* Medium cyan */
+            --tertiary-bg: #80deea; /* Darker cyan */
+            --accent-color: #00796b;  /* Teal for highlights */
+            --text-color: #004d40;   /* Dark teal text */
+            --disabled-color: #9e9e9e; /* Grey for disabled elements */
+            --input-bg: #ffffff;
+            --border-color: #4dd0e1; /* Lighter teal border */
+            --result-color: #00695c; /* Darker Teal for results */
+            --note-color: #00796b;   /* Teal for notes */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 14px; /* Slightly smaller base font */
+            color: var(--text-color);
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg), var(--tertiary-bg));
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent white */
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- Sections --- */
+        section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+        }
+
+        .input-section, .output-section {
+             border-bottom: 1px solid var(--border-color);
+        }
+       .input-section:last-of-type {
+            border-bottom: 2px solid var(--accent-color); /* Thicker separator */
+             margin-bottom: 25px;
+            padding-bottom: 20px;
+       }
+        .output-section:last-of-type {
+             border-bottom: none;
+        }
+
+
+        h2 {
+            color: var(--accent-color);
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        /* --- Form Elements --- */
+        .form-group {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 10px; /* Space between label and input */
+        }
+
+        .form-group label,
+        .form-group .label-text { /* Use for non-input labels like checkboxes */
+            flex-basis: 280px; /* Fixed width for labels */
+            flex-shrink: 0; /* Prevent shrinking */
+            color: var(--text-color);
+            padding-right: 10px;
+        }
+
+        .form-group input[type="number"],
+        .form-group input[type="text"] /* Include text for potentially hidden fields */
+        {
+            flex-grow: 1; /* Allow input to fill remaining space */
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            font-size: 0.95em;
+            min-width: 80px; /* Ensure input doesn't get too small */
+            max-width: 150px; /* Prevent input from getting too large */
+        }
+
+         /* Style for number inputs to prevent arrows */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .checkbox-group label {
+             display: flex; /* Use flex for alignment within label too */
+            align-items: center;
+            flex-grow: 1;
+        }
+         .checkbox-group label .label-text {
+             flex-grow: 1; /* Allow text to take space */
+         }
+
+        .disabled-item label,
+        .disabled-item .label-text {
+            color: var(--disabled-color);
+            font-style: italic;
+            cursor: not-allowed;
+        }
+        .disabled-item input[type="checkbox"] {
+             cursor: not-allowed;
+        }
+
+         /* Hide element smoothly */
+        .hidden {
+            max-height: 0;
+            overflow: hidden;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            opacity: 0;
+            transition: all 0.4s ease-out;
+        }
+        /* Style for the RISE PCE input group specifically when shown */
+        #rise-pce-group {
+            max-height: 100px; /* Adjust as needed */
+            opacity: 1;
+            padding-left: 25px; /* Indent */
+            margin-top: 5px;
+            margin-bottom: 12px; /* Keep consistent spacing */
+        }
+
+
+        /* --- Output Section Styling --- */
+        .output-item {
+            margin-bottom: 10px;
+            padding-left: 15px; /* Indent output items */
+        }
+        .output-item strong {
+            color: var(--result-color);
+            font-weight: 600;
+            margin-left: 5px; /* Space before result value */
+        }
+        .output-note {
+            font-size: 0.85em;
+            color: var(--note-color);
+            margin-left: 10px;
+            font-style: italic;
+        }
+        .main-output-label {
+             font-weight: bold;
+             color: var(--accent-color);
+        }
+
+
+        /* --- Responsiveness --- */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                font-size: 13px;
+            }
+            .container {
+                padding: 15px;
+            }
+            .form-group {
+                flex-direction: column; /* Stack label and input */
+                align-items: flex-start; /* Align items to the start */
+                gap: 5px;
+            }
+            .form-group label,
+            .form-group .label-text {
+                 flex-basis: auto; /* Allow label to take full width */
+                 width: 100%;
+                 padding-right: 0;
+                 margin-bottom: 3px;
+            }
+            .form-group input[type="number"],
+            .form-group input[type="text"] {
+                 width: 100%; /* Make input take full width */
+                 max-width: none; /* Remove max width limit */
+            }
+             #rise-pce-group {
+                 padding-left: 15px; /* Reduce indent on mobile */
+            }
+            .output-item {
+                padding-left: 5px; /* Reduce indent */
+            }
+             h2 {
+                 font-size: 1.2em;
+             }
+        }
+
+    </style>
 </head>
 <body>
-  <h2>Input</h2>
-  <div>
-    <h3>Insight Apps</h3>
-    <div class="checkbox-group">
-      <label><input type="checkbox" id="coreAnalytics"> Core Enterprise Analytics</label>
-      <div id="fueInputContainer" style="display:none;">
-        <div class="form-row">
-          <label>RISE PCE (FUE):</label>
-          <input type="number" id="fue" min="0">
+
+    <div class="container">
+
+        <div class="input-section">
+            <h2>Insight Apps</h2>
+            <div class="checkbox-group">
+                 <input type="checkbox" id="core-enterprise-analytics" name="core-enterprise-analytics">
+                 <label for="core-enterprise-analytics">
+                     <span class="label-text">Core Enterprise Analytics</span>
+                </label>
+            </div>
+            <div id="rise-pce-group" class="form-group hidden">
+                <label for="rise-pce-fue">RISE PCE (FUE)</label>
+                <input type="number" id="rise-pce-fue" name="rise-pce-fue" min="0" value="0" placeholder="e.g., 1000">
+            </div>
+
+             <div class="checkbox-group disabled-item">
+                <input type="checkbox" id="people-analytics" name="people-analytics" disabled>
+                 <label for="people-analytics"><span class="label-text">People Analytics (Not Available)</span></label>
+            </div>
+             <div class="checkbox-group disabled-item">
+                 <input type="checkbox" id="spend-analytics" name="spend-analytics" disabled>
+                 <label for="spend-analytics"><span class="label-text">Spend Analytics (Not Available)</span></label>
+            </div>
+            <div class="checkbox-group disabled-item">
+                <input type="checkbox" id="supply-chain-analytics" name="supply-chain-analytics" disabled>
+                <label for="supply-chain-analytics"><span class="label-text">Supply Chain Analytics (Not Available)</span></label>
+            </div>
+             <div class="checkbox-group disabled-item">
+                 <input type="checkbox" id="customer-analytics" name="customer-analytics" disabled>
+                 <label for="customer-analytics"><span class="label-text">Customer Analytics (Not Available)</span></label>
+            </div>
+             <div class="checkbox-group disabled-item">
+                 <input type="checkbox" id="finance-analytics" name="finance-analytics" disabled>
+                 <label for="finance-analytics"><span class="label-text">Finance Analytics (Not Available)</span></label>
+            </div>
         </div>
-      </div>
-      <label class="disabled"><input type="checkbox" disabled> People Analytics (Coming Soon)</label>
-      <label class="disabled"><input type="checkbox" disabled> Spend Analytics (Coming Soon)</label>
-      <label class="disabled"><input type="checkbox" disabled> Supply Chain Analytics (Coming Soon)</label>
-      <label class="disabled"><input type="checkbox" disabled> Customer Analytics (Coming Soon)</label>
-      <label class="disabled"><input type="checkbox" disabled> Finance Analytics (Coming Soon)</label>
-    </div>
 
-    <h3>BDC Core Capacity</h3>
-    <div class="form-row"><label>Datasphere Production (CU):</label><input type="number" id="dspProd" min="0"></div>
-    <div class="form-row"><label>Datasphere QA (CU):</label><input type="number" id="dspQA" min="0"></div>
-    <div class="form-row"><label>Datasphere DEV (CU):</label><input type="number" id="dspDev" min="0"></div>
-    <div class="form-row"><label>SAC BI (Users, min 25):</label><input type="number" id="sacBI" min="0"></div>
-    <div class="form-row"><label>SAC Planning Standard (Users, min 10):</label><input type="number" id="sacStd" min="0"></div>
-    <div class="form-row"><label>SAC Planning Professional (Users, min 1):</label><input type="number" id="sacPro" min="0"></div>
-    <div class="form-row"><label>SAC Test tenant (Users, min 20):</label><input type="number" id="sacTest" min="0"></div>
-    <div class="form-row"><label>BW PCE (CU):</label><input type="number" id="bwPce" min="0"></div>
-  </div>
+        <div class="input-section">
+             <h2>BDC Core Capacity</h2>
+             <div class="form-group">
+                <label for="ds-prod">Datasphere Production (CU)</label>
+                <input type="number" id="ds-prod" name="ds-prod" min="0" value="0" placeholder="Integer">
+            </div>
+            <div class="form-group">
+                <label for="ds-qa">Datasphere QA (CU)</label>
+                <input type="number" id="ds-qa" name="ds-qa" min="0" value="0" placeholder="Integer">
+            </div>
+            <div class="form-group">
+                <label for="ds-dev">Datasphere DEV (CU)</label>
+                <input type="number" id="ds-dev" name="ds-dev" min="0" value="0" placeholder="Integer">
+            </div>
+            <div class="form-group">
+                <label for="sac-bi">SAC BI (Users, minimum 25)</label>
+                <input type="number" id="sac-bi" name="sac-bi" min="0" value="0" placeholder="Integer">
+            </div>
+             <div class="form-group">
+                <label for="sac-plan-std">SAC Planning Standard (Users, minimum 10)</label>
+                <input type="number" id="sac-plan-std" name="sac-plan-std" min="0" value="0" placeholder="Integer">
+            </div>
+             <div class="form-group">
+                <label for="sac-plan-pro">SAC Planning Professional (Users, minimum 1)</label>
+                <input type="number" id="sac-plan-pro" name="sac-plan-pro" min="0" value="0" placeholder="Integer">
+            </div>
+             <div class="form-group">
+                 <label for="sac-test">SAC Test tenant (Users, minimum 20)</label>
+                <input type="number" id="sac-test" name="sac-test" min="0" value="0" placeholder="Integer">
+            </div>
+            <div class="form-group">
+                <label for="bw-pce">BW PCE (CU)</label>
+                <input type="number" id="bw-pce" name="bw-pce" min="0" value="0" placeholder="Integer">
+            </div>
+        </div>
 
-  <h2>Output</h2>
-  <div id="output" class="output"></div>
+        <div id="output-section-1" class="output-section hidden">
+             <div class="output-item">
+                8019233 : Insight App - Core Enterprise Analytics (FUE)
+                <strong id="output-core-enterprise-fue">0</strong>
+             </div>
+        </div>
 
-  <script>
-    const fueTiers = [
-      { lower:60, upper:135, units:15600 },
-      { lower:136, upper:550, units:30500 },
-      { lower:551, upper:1000, units:39800 },
-      { lower:1001, upper:2000, units:54500 },
-      { lower:2001, upper:4000, units:69200 },
-      { lower:4001, upper:6000, units:69300 },
-      { lower:6001, upper:12000, units:93300 },
-      { lower:12001, upper:25000, units:159900 },
-      { lower:25001, upper:Infinity, units:221200 }
-    ];
+        <div id="output-section-2" class="output-section">
+             <div class="output-item main-output-label">
+                 8019271 : SAP Business Data Cloud Core Capacity (CU)
+                 <strong id="output-bdc-total">0</strong>
+            </div>
+            <div class="output-item">
+                - Auto-Attach of BDC CU based on Tier (CU)
+                <strong id="output-sub1-auto-attach">0</strong>
+                <span id="output-sub1-note" class="output-note hidden"></span>
+            </div>
+            <div class="output-item">
+                - Datasphere (CU)
+                <strong id="output-sub2-datasphere">0</strong>
+            </div>
+            <div class="output-item">
+                - SAC BI (CU)
+                <strong id="output-sub3-sac-bi">0</strong>
+                 <span id="output-sub3-note" class="output-note hidden"></span>
+            </div>
+             <div class="output-item">
+                - SAC Planning Standard (CU)
+                <strong id="output-sub4-sac-plan-std">0</strong>
+                 <span id="output-sub4-note" class="output-note hidden"></span>
+            </div>
+             <div class="output-item">
+                - SAC Planning Professional (CU)
+                <strong id="output-sub5-sac-plan-pro">0</strong>
+                 <span id="output-sub5-note" class="output-note hidden"></span>
+            </div>
+            <div class="output-item">
+                - SAC Test tenant (CU)
+                 <strong id="output-sub6-sac-test">0</strong>
+                 <span id="output-sub6-note" class="output-note hidden"></span>
+            </div>
+             <div class="output-item">
+                 - BW PCE (CU)
+                 <strong id="output-sub7-bw-pce">0</strong>
+            </div>
+        </div>
 
-    const sacBI = [
-      { min:25, max:200, value:38.63 },
-      { min:201, max:500, value:21.6 },
-      { min:501, max:1000, value:17.38 },
-      { min:1001, max:3000, value:15.95 },
-      { min:3001, max:5000, value:12.64 },
-      { min:5001, max:Infinity, value:10.54 }
-    ];
-    const sacStd = [
-      { min:10, max:200, value:119.80 },
-      { min:201, max:500, value:57.98 },
-      { min:501, max:1000, value:46.7 },
-      { min:1001, max:Infinity, value:41.57 }
-    ];
-    const sacPro = [{ min:1, max:Infinity, value:820.43 }];
-    const sacTest = [{ min:20, max:Infinity, value:47.05 }];
+    </div><script>
+        // --- Data Definitions ---
+        const tierData = [
+            { tier: 'Tier 1', lower: 60,    upper: 135,   units: 15600 },
+            { tier: 'Tier 2', lower: 136,   upper: 550,   units: 30500 },
+            { tier: 'Tier 3', lower: 551,   upper: 1000,  units: 39800 },
+            { tier: 'Tier 4', lower: 1001,  upper: 2000,  units: 54500 },
+            { tier: 'Tier 5', lower: 2001,  upper: 4000,  units: 69200 },
+            { tier: 'Tier 6', lower: 4001,  upper: 6000,  units: 69300 },
+            { tier: 'Tier 7', lower: 6001,  upper: 12000, units: 93300 },
+            { tier: 'Tier 8', lower: 12001, upper: 25000, units: 159900 },
+            { tier: 'Tier 9', lower: 25001, upper: Infinity, units: 221200 },
+        ];
 
-    function getTierUnits(fue) {
-      for (const tier of fueTiers) {
-        if (fue >= tier.lower && fue <= tier.upper) return tier.units;
-      }
-      return 0;
-    }
+        const sacBiData = [
+            { minUsers: 25,   maxUsers: 200,    cuValue: 38.63 },
+            { minUsers: 201,  maxUsers: 500,    cuValue: 21.60 },
+            { minUsers: 501,  maxUsers: 1000,   cuValue: 17.38 },
+            { minUsers: 1001, maxUsers: 3000,   cuValue: 15.95 },
+            { minUsers: 3001, maxUsers: 5000,   cuValue: 12.64 },
+            { minUsers: 5001, maxUsers: Infinity, cuValue: 10.54 },
+        ];
 
-    function calculateSAC(users, table) {
-      if (users <= 0) return 0;
-      for (const row of table) {
-        if (users >= row.min && users <= row.max) return users * row.value;
-      }
-      return 0;
-    }
+        const sacPlanStdData = [
+            { minUsers: 10,   maxUsers: 200,    cuValue: 119.80 },
+            { minUsers: 201,  maxUsers: 500,    cuValue: 57.98 },
+            { minUsers: 501,  maxUsers: 1000,   cuValue: 46.70 },
+            { minUsers: 1001, maxUsers: Infinity, cuValue: 41.57 },
+        ];
 
-    function calculate() {
-      const checked = document.getElementById('coreAnalytics').checked;
-      const fue = parseInt(document.getElementById('fue').value) || 0;
-      const dspProd = parseInt(document.getElementById('dspProd').value) || 0;
-      const dspQA = parseInt(document.getElementById('dspQA').value) || 0;
-      const dspDev = parseInt(document.getElementById('dspDev').value) || 0;
-      const sacBIU = parseInt(document.getElementById('sacBI').value) || 0;
-      const sacStdU = parseInt(document.getElementById('sacStd').value) || 0;
-      const sacProU = parseInt(document.getElementById('sacPro').value) || 0;
-      const sacTestU = parseInt(document.getElementById('sacTest').value) || 0;
-      const bwPce = parseInt(document.getElementById('bwPce').value) || 0;
+        const sacPlanProCU = 820.43;
+        const sacTestCU = 47.05;
 
-      const autoAttach = checked ? getTierUnits(fue) : 0;
-      const sacBICU = calculateSAC(sacBIU, sacBI);
-      const sacStdCU = calculateSAC(sacStdU, sacStd);
-      const sacProCU = calculateSAC(sacProU, sacPro);
-      const sacTestCU = calculateSAC(sacTestU, sacTest);
-      const dspCU = dspProd + dspQA + dspDev;
+        const MIN_SAC_BI_USERS = 25;
+        const MIN_SAC_PLAN_STD_USERS = 10;
+        const MIN_SAC_PLAN_PRO_USERS = 1;
+        const MIN_SAC_TEST_USERS = 20;
 
-      const bdcCU = autoAttach + dspCU + sacBICU + sacStdCU + sacProCU + sacTestCU + bwPce;
+        // --- DOM Elements ---
+        const coreEnterpriseCheckbox = document.getElementById('core-enterprise-analytics');
+        const risePceGroup = document.getElementById('rise-pce-group');
+        const risePceInput = document.getElementById('rise-pce-fue');
+        const dsProdInput = document.getElementById('ds-prod');
+        const dsQaInput = document.getElementById('ds-qa');
+        const dsDevInput = document.getElementById('ds-dev');
+        const sacBiInput = document.getElementById('sac-bi');
+        const sacPlanStdInput = document.getElementById('sac-plan-std');
+        const sacPlanProInput = document.getElementById('sac-plan-pro');
+        const sacTestInput = document.getElementById('sac-test');
+        const bwPceInput = document.getElementById('bw-pce');
 
-      let html = '';
-      if (checked && fue > 0) {
-        html += `<p>8019233 : Insight App - Core Enterprise Analytics (FUE) = ${fue}</p>`;
-      }
-      html += `<p>8019271 : SAP Business Data Cloud Core Capacity (CU) = ${bdcCU}</p>`;
-      html += `<div class="sub-item"> - Auto-Attach of BDC CU based on Tier (CU): ${autoAttach}</div>`;
-      html += `<div class="sub-item"> - Datasphere (CU): ${dspCU}</div>`;
-      html += `<div class="sub-item"> - SAC BI (CU): ${sacBICU}</div>`;
-      html += `<div class="sub-item"> - SAC Planning Standard (CU): ${sacStdCU}</div>`;
-      html += `<div class="sub-item"> - SAC Planning Professional (CU): ${sacProCU}</div>`;
-      html += `<div class="sub-item"> - SAC Test tenant (CU): ${sacTestCU}</div>`;
-      html += `<div class="sub-item"> - BW PCE (CU): ${bwPce}</div>`;
+        const outputSection1 = document.getElementById('output-section-1');
+        const outputCoreEnterpriseFue = document.getElementById('output-core-enterprise-fue');
+        const outputBdcTotal = document.getElementById('output-bdc-total');
+        const outputSub1AutoAttach = document.getElementById('output-sub1-auto-attach');
+        const outputSub1Note = document.getElementById('output-sub1-note');
+        const outputSub2Datasphere = document.getElementById('output-sub2-datasphere');
+        const outputSub3SacBi = document.getElementById('output-sub3-sac-bi');
+        const outputSub3Note = document.getElementById('output-sub3-note');
+        const outputSub4SacPlanStd = document.getElementById('output-sub4-sac-plan-std');
+        const outputSub4Note = document.getElementById('output-sub4-note');
+        const outputSub5SacPlanPro = document.getElementById('output-sub5-sac-plan-pro');
+        const outputSub5Note = document.getElementById('output-sub5-note');
+        const outputSub6SacTest = document.getElementById('output-sub6-sac-test');
+        const outputSub6Note = document.getElementById('output-sub6-note');
+        const outputSub7BwPce = document.getElementById('output-sub7-bw-pce');
 
-      document.getElementById('output').innerHTML = html;
-    }
+        // --- Helper Functions ---
+        function getIntValue(element, defaultValue = 0) {
+            const value = parseInt(element.value, 10);
+            return isNaN(value) || value < 0 ? defaultValue : value;
+        }
 
-    document.getElementById('coreAnalytics').addEventListener('change', (e) => {
-      document.getElementById('fueInputContainer').style.display = e.target.checked ? 'block' : 'none';
-      calculate();
-    });
+        function formatInt(value) {
+            // Formats number with commas and ensures it's an integer
+             return Math.ceil(value).toLocaleString('en-US');
+        }
 
-    document.querySelectorAll('input').forEach(input => {
-      input.addEventListener('input', calculate);
-    });
+        function getTierInfo(fueValue) {
+            if (!fueValue || fueValue <= 0) {
+                return { tier: null, units: 0 };
+            }
+            for (const tier of tierData) {
+                if (fueValue >= tier.lower && fueValue <= tier.upper) {
+                    return { tier: tier.tier, units: tier.units };
+                }
+            }
+            return { tier: null, units: 0 }; // Should not happen with Infinity in last tier
+        }
 
-    calculate();
-  </script>
+         function getSacCuValue(users, sacDataTable, minUsers) {
+            if (users <= 0) return { users: 0, cuValue: 0 };
+
+            // Enforce minimum user count for calculation if input is > 0
+            const effectiveUsers = users < minUsers ? minUsers : users;
+
+            for (const tier of sacDataTable) {
+                if (effectiveUsers >= tier.minUsers && effectiveUsers <= tier.maxUsers) {
+                    return { users: effectiveUsers, cuValue: tier.cuValue };
+                }
+            }
+            return { users: effectiveUsers, cuValue: 0 }; // Should not happen with Infinity
+        }
+
+        function updateNoteVisibility(noteElement, value, textPrefix) {
+            if (value > 0 && textPrefix) {
+                noteElement.textContent = `(${textPrefix})`;
+                noteElement.classList.remove('hidden');
+            } else {
+                noteElement.textContent = '';
+                noteElement.classList.add('hidden');
+            }
+        }
+
+
+        // --- Calculation Logic ---
+        function calculateOutput() {
+            // Read Input Values
+            const isCoreEnterpriseChecked = coreEnterpriseCheckbox.checked;
+            const risePceFue = getIntValue(risePceInput);
+            const dsProd = getIntValue(dsProdInput);
+            const dsQa = getIntValue(dsQaInput);
+            const dsDev = getIntValue(dsDevInput);
+            const sacBiUsersRaw = getIntValue(sacBiInput);
+            const sacPlanStdUsersRaw = getIntValue(sacPlanStdInput);
+            const sacPlanProUsersRaw = getIntValue(sacPlanProInput);
+            const sacTestUsersRaw = getIntValue(sacTestInput);
+            const bwPce = getIntValue(bwPceInput);
+
+             // --- Output Section 1 ---
+             if (isCoreEnterpriseChecked) {
+                 outputSection1.classList.remove('hidden');
+                 outputCoreEnterpriseFue.textContent = formatInt(risePceFue);
+             } else {
+                 outputSection1.classList.add('hidden');
+                 outputCoreEnterpriseFue.textContent = '0'; // Reset even if hidden
+            }
+
+            // --- Output Section 2 Calculations ---
+
+            // Sub-item 1: Auto-Attach BDC CU
+            const tierInfo = getTierInfo(isCoreEnterpriseChecked ? risePceFue : 0); // Only calculate if checkbox is checked
+            const sub1Result = tierInfo.units;
+            outputSub1AutoAttach.textContent = formatInt(sub1Result);
+            updateNoteVisibility(outputSub1Note, sub1Result, tierInfo.tier);
+
+
+            // Sub-item 2: Datasphere
+            const sub2Result = dsProd + dsQa + dsDev;
+            outputSub2Datasphere.textContent = formatInt(sub2Result);
+
+            // Sub-item 3: SAC BI
+            const sacBiCalcInfo = getSacCuValue(sacBiUsersRaw, sacBiData, MIN_SAC_BI_USERS);
+            const sub3Result = sacBiUsersRaw > 0 ? Math.ceil(sacBiCalcInfo.users * sacBiCalcInfo.cuValue) : 0;
+            outputSub3SacBi.textContent = formatInt(sub3Result);
+            updateNoteVisibility(outputSub3Note, sub3Result, `Capacity Unit Value = ${sacBiCalcInfo.cuValue.toFixed(2)}`);
+
+
+             // Sub-item 4: SAC Planning Standard
+            const sacPlanStdCalcInfo = getSacCuValue(sacPlanStdUsersRaw, sacPlanStdData, MIN_SAC_PLAN_STD_USERS);
+            const sub4Result = sacPlanStdUsersRaw > 0 ? Math.ceil(sacPlanStdCalcInfo.users * sacPlanStdCalcInfo.cuValue) : 0;
+            outputSub4SacPlanStd.textContent = formatInt(sub4Result);
+            updateNoteVisibility(outputSub4Note, sub4Result, `Capacity Unit Value = ${sacPlanStdCalcInfo.cuValue.toFixed(2)}`);
+
+
+            // Sub-item 5: SAC Planning Professional
+            let sub5Result = 0;
+            let sacPlanProEffectiveUsers = 0;
+            if (sacPlanProUsersRaw > 0) {
+                 sacPlanProEffectiveUsers = sacPlanProUsersRaw < MIN_SAC_PLAN_PRO_USERS ? MIN_SAC_PLAN_PRO_USERS : sacPlanProUsersRaw;
+                sub5Result = Math.ceil(sacPlanProEffectiveUsers * sacPlanProCU);
+            }
+             outputSub5SacPlanPro.textContent = formatInt(sub5Result);
+            updateNoteVisibility(outputSub5Note, sub5Result, `Capacity Unit Value = ${sacPlanProCU.toFixed(2)}`);
+
+
+            // Sub-item 6: SAC Test tenant
+            let sub6Result = 0;
+             let sacTestEffectiveUsers = 0;
+             if (sacTestUsersRaw > 0) {
+                 sacTestEffectiveUsers = sacTestUsersRaw < MIN_SAC_TEST_USERS ? MIN_SAC_TEST_USERS : sacTestUsersRaw;
+                 sub6Result = Math.ceil(sacTestEffectiveUsers * sacTestCU);
+             }
+            outputSub6SacTest.textContent = formatInt(sub6Result);
+            updateNoteVisibility(outputSub6Note, sub6Result, `Capacity Unit Value = ${sacTestCU.toFixed(2)}`);
+
+
+            // Sub-item 7: BW PCE
+            const sub7Result = bwPce;
+            outputSub7BwPce.textContent = formatInt(sub7Result);
+
+
+            // Final BDC Core Capacity Calculation
+             const sumSub2to7 = sub2Result + sub3Result + sub4Result + sub5Result + sub6Result + sub7Result;
+             const finalBdcResult = sumSub2to7 > sub1Result ? sumSub2to7 : sub1Result;
+
+             outputBdcTotal.textContent = formatInt(finalBdcResult);
+
+        }
+
+        // --- Event Listeners ---
+        coreEnterpriseCheckbox.addEventListener('change', () => {
+            if (coreEnterpriseCheckbox.checked) {
+                 risePceGroup.classList.remove('hidden');
+            } else {
+                 risePceGroup.classList.add('hidden');
+                 // Optionally clear the FUE input when unchecked
+                 // risePceInput.value = '0';
+            }
+            calculateOutput(); // Recalculate when checkbox changes
+        });
+
+         // Add listeners to all input fields
+         const inputs = [
+            risePceInput, dsProdInput, dsQaInput, dsDevInput,
+            sacBiInput, sacPlanStdInput, sacPlanProInput, sacTestInput,
+            bwPceInput
+        ];
+
+        inputs.forEach(input => {
+             input.addEventListener('input', calculateOutput);
+        });
+
+
+        // --- Initial Calculation on Load ---
+        calculateOutput();
+
+    </script>
+
 </body>
 </html>
