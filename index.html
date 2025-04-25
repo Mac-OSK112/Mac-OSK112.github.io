@@ -3,578 +3,609 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insight Apps & BDC Calculator</title>
+    <title>Unofficial BDC & Insight Apps Calculator</title>
     <style>
-        /* --- General Styling --- */
         :root {
-            --primary-bg: #e0f7fa; /* Light cyan */
-            --secondary-bg: #b2ebf2; /* Medium cyan */
-            --tertiary-bg: #80deea; /* Darker cyan */
-            --accent-color: #00796b;  /* Teal for highlights */
-            --text-color: #004d40;   /* Dark teal text */
-            --disabled-color: #9e9e9e; /* Grey for disabled elements */
-            --input-bg: #ffffff;
-            --border-color: #4dd0e1; /* Lighter teal border */
-            --result-color: #00695c; /* Darker Teal for results */
-            --note-color: #00796b;   /* Teal for notes */
+            --primary-bg: #f0f8ff;
+            --border-color: #a0c0e0;
+            --highlight-color: #2c7be5;
+            --text-color: #333;
+            --result-color: #0066cc;
+            --disabled-color: #aaa;
+            --section-bg: #ffffff;
         }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+        
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
-            font-size: 14px; /* Slightly smaller base font */
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary-bg);
             color: var(--text-color);
-            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg), var(--tertiary-bg));
-            background-size: 400% 400%;
-            animation: gradientAnimation 15s ease infinite;
-            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 14px;
+            padding: 10px;
         }
-
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
+        
         .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent white */
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
-
-        /* --- Sections --- */
-        section {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
+        
+        .title {
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            color: var(--highlight-color);
+            font-weight: 600;
+            margin-bottom: 10px;
         }
-
-        .input-section, .output-section {
-             border-bottom: 1px solid var(--border-color);
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            background-color: var(--section-bg);
         }
-       .input-section:last-of-type {
-            border-bottom: 2px solid var(--accent-color); /* Thicker separator */
-             margin-bottom: 25px;
-            padding-bottom: 20px;
-       }
-        .output-section:last-of-type {
-             border-bottom: none;
+        
+        .output-section {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            background-color: var(--section-bg);
         }
-
-
-        h2 {
-            color: var(--accent-color);
-            font-size: 1.3em;
-            margin-bottom: 15px;
+        
+        .reference-section {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            background-color: var(--section-bg);
+            text-align: center;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--highlight-color);
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 5px;
         }
-
-        /* --- Form Elements --- */
-        .form-group {
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-            align-items: center;
-            margin-bottom: 12px;
-            gap: 10px; /* Space between label and input */
-        }
-
-        .form-group label,
-        .form-group .label-text { /* Use for non-input labels like checkboxes */
-            flex-basis: 280px; /* Fixed width for labels */
-            flex-shrink: 0; /* Prevent shrinking */
-            color: var(--text-color);
-            padding-right: 10px;
-        }
-
-        .form-group input[type="number"],
-        .form-group input[type="text"] /* Include text for potentially hidden fields */
-        {
-            flex-grow: 1; /* Allow input to fill remaining space */
-            padding: 8px 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background-color: var(--input-bg);
-            font-size: 0.95em;
-            min-width: 80px; /* Ensure input doesn't get too small */
-            max-width: 150px; /* Prevent input from getting too large */
-        }
-
-         /* Style for number inputs to prevent arrows */
-        input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type=number] {
-            -moz-appearance: textfield; /* Firefox */
-        }
-
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
+        
+        .input-group {
             margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
         }
-
-        .checkbox-group input[type="checkbox"] {
+        
+        .input-group label {
+            flex: 1;
+            min-width: 150px;
             margin-right: 10px;
         }
-
-        .checkbox-group label {
-             display: flex; /* Use flex for alignment within label too */
-            align-items: center;
-            flex-grow: 1;
+        
+        .input-group input[type="number"] {
+            width: 100px;
+            padding: 3px 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
         }
-         .checkbox-group label .label-text {
-             flex-grow: 1; /* Allow text to take space */
-         }
-
-        .disabled-item label,
-        .disabled-item .label-text {
-            color: var(--disabled-color);
-            font-style: italic;
-            cursor: not-allowed;
+        
+        .input-group input[type="checkbox"] {
+            margin-right: 5px;
         }
-        .disabled-item input[type="checkbox"] {
-             cursor: not-allowed;
+        
+        .input-group select {
+            width: 100px;
+            padding: 3px 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
         }
-
-         /* Hide element smoothly */
-        .hidden {
-            max-height: 0;
-            overflow: hidden;
-            padding-top: 0;
-            padding-bottom: 0;
-            margin-top: 0;
-            margin-bottom: 0;
-            opacity: 0;
-            transition: all 0.4s ease-out;
-        }
-        /* Style for the RISE PCE input group specifically when shown */
-        #rise-pce-group {
-            max-height: 100px; /* Adjust as needed */
-            opacity: 1;
-            padding-left: 25px; /* Indent */
-            margin-top: 5px;
-            margin-bottom: 12px; /* Keep consistent spacing */
-        }
-
-
-        /* --- Output Section Styling --- */
-        .output-item {
+        
+        .result-item {
             margin-bottom: 10px;
-            padding-left: 15px; /* Indent output items */
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
         }
-        .output-item strong {
+        
+        .result-item .label {
+            flex: 2;
+            min-width: 200px;
+        }
+        
+        .result-item .value {
+            flex: 1;
+            min-width: 50px;
             color: var(--result-color);
             font-weight: 600;
-            margin-left: 5px; /* Space before result value */
         }
-        .output-note {
-            font-size: 0.85em;
-            color: var(--note-color);
+        
+        .result-item .note {
+            width: 100%;
+            font-size: 12px;
+            color: var(--disabled-color);
+            margin-top: 2px;
             margin-left: 10px;
-            font-style: italic;
         }
-        .main-output-label {
-             font-weight: bold;
-             color: var(--accent-color);
+        
+        .sub-item {
+            margin-left: 15px;
+            margin-bottom: 5px;
         }
-
-
-        /* --- Responsiveness --- */
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-                font-size: 13px;
-            }
+        
+        .disabled {
+            color: var(--disabled-color);
+            cursor: not-allowed;
+        }
+        
+        .reference-section img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
+        
+        .reference-section a {
+            color: var(--highlight-color);
+            text-decoration: none;
+        }
+        
+        .reference-section a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (min-width: 768px) {
             .container {
-                padding: 15px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto;
+                grid-template-areas: 
+                    "input output"
+                    "input reference";
             }
-            .form-group {
-                flex-direction: column; /* Stack label and input */
-                align-items: flex-start; /* Align items to the start */
-                gap: 5px;
+            
+            .title {
+                grid-column: span 2;
             }
-            .form-group label,
-            .form-group .label-text {
-                 flex-basis: auto; /* Allow label to take full width */
-                 width: 100%;
-                 padding-right: 0;
-                 margin-bottom: 3px;
+            
+            .input-section {
+                grid-area: input;
             }
-            .form-group input[type="number"],
-            .form-group input[type="text"] {
-                 width: 100%; /* Make input take full width */
-                 max-width: none; /* Remove max width limit */
+            
+            .output-section {
+                grid-area: output;
             }
-             #rise-pce-group {
-                 padding-left: 15px; /* Reduce indent on mobile */
+            
+            .reference-section {
+                grid-area: reference;
             }
-            .output-item {
-                padding-left: 5px; /* Reduce indent */
-            }
-             h2 {
-                 font-size: 1.2em;
-             }
         }
-
+        
+        @media (max-width: 767px) {
+            .container {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
-
     <div class="container">
-
+        <div class="title">Unofficial BDC & Insight Apps Calculator</div>
+        
         <div class="input-section">
-            <h2>Insight Apps</h2>
-            <div class="checkbox-group">
-                 <input type="checkbox" id="core-enterprise-analytics" name="core-enterprise-analytics">
-                 <label for="core-enterprise-analytics">
-                     <span class="label-text">Core Enterprise Analytics</span>
-                </label>
+            <div class="section-title">Insight Apps</div>
+            <div class="input-group">
+                <input type="checkbox" id="coreEnterpriseAnalytics" onchange="updateResults()">
+                <label for="coreEnterpriseAnalytics">Core Enterprise Analytics</label>
             </div>
-            <div id="rise-pce-group" class="form-group hidden">
-                <label for="rise-pce-fue">RISE PCE (FUE)</label>
-                <input type="number" id="rise-pce-fue" name="rise-pce-fue" min="0" value="0" placeholder="e.g., 1000">
+            <div class="input-group" id="riseGroup" style="display: none; margin-left: 20px;">
+                <label for="risePCE">RISE PCE (FUE)</label>
+                <input type="number" id="risePCE" min="0" value="0" onfocus="showReference('BDC_Core_AutoAttach.png')" onchange="updateResults()">
             </div>
-
-             <div class="checkbox-group disabled-item">
-                <input type="checkbox" id="people-analytics" name="people-analytics" disabled>
-                 <label for="people-analytics"><span class="label-text">People Analytics (Not Available)</span></label>
+            <div class="input-group">
+                <input type="checkbox" disabled>
+                <label class="disabled">People Analytics</label>
             </div>
-             <div class="checkbox-group disabled-item">
-                 <input type="checkbox" id="spend-analytics" name="spend-analytics" disabled>
-                 <label for="spend-analytics"><span class="label-text">Spend Analytics (Not Available)</span></label>
+            <div class="input-group">
+                <input type="checkbox" disabled>
+                <label class="disabled">Spend Analytics</label>
             </div>
-            <div class="checkbox-group disabled-item">
-                <input type="checkbox" id="supply-chain-analytics" name="supply-chain-analytics" disabled>
-                <label for="supply-chain-analytics"><span class="label-text">Supply Chain Analytics (Not Available)</span></label>
+            <div class="input-group">
+                <input type="checkbox" disabled>
+                <label class="disabled">Supply Chain Analytics</label>
             </div>
-             <div class="checkbox-group disabled-item">
-                 <input type="checkbox" id="customer-analytics" name="customer-analytics" disabled>
-                 <label for="customer-analytics"><span class="label-text">Customer Analytics (Not Available)</span></label>
+            <div class="input-group">
+                <input type="checkbox" disabled>
+                <label class="disabled">Customer Analytics</label>
             </div>
-             <div class="checkbox-group disabled-item">
-                 <input type="checkbox" id="finance-analytics" name="finance-analytics" disabled>
-                 <label for="finance-analytics"><span class="label-text">Finance Analytics (Not Available)</span></label>
+            <div class="input-group">
+                <input type="checkbox" disabled>
+                <label class="disabled">Finance Analytics</label>
             </div>
-        </div>
-
-        <div class="input-section">
-             <h2>BDC Core Capacity</h2>
-             <div class="form-group">
-                <label for="ds-prod">Datasphere Production (CU)</label>
-                <input type="number" id="ds-prod" name="ds-prod" min="0" value="0" placeholder="Integer">
+            <div class="input-group">
+                <input type="checkbox" id="customerManagedDataProducts" onfocus="showReference('IA_CustomerManaged.png')" onchange="updateResults()">
+                <label for="customerManagedDataProducts">Customer-Managed Data Products</label>
             </div>
-            <div class="form-group">
-                <label for="ds-qa">Datasphere QA (CU)</label>
-                <input type="number" id="ds-qa" name="ds-qa" min="0" value="0" placeholder="Integer">
+            
+            <div class="section-title">BDC Core Capacity</div>
+            <div class="input-group">
+                <label for="datasphereProduction">Datasphere Production (CU)</label>
+                <input type="number" id="datasphereProduction" min="0" value="0" onfocus="showDatasphereReference()" onchange="updateResults()">
             </div>
-            <div class="form-group">
-                <label for="ds-dev">Datasphere DEV (CU)</label>
-                <input type="number" id="ds-dev" name="ds-dev" min="0" value="0" placeholder="Integer">
+            <div class="input-group">
+                <label for="datasphereQA">Datasphere QA (CU)</label>
+                <input type="number" id="datasphereQA" min="0" value="0" onfocus="showDatasphereReference()" onchange="updateResults()">
             </div>
-            <div class="form-group">
-                <label for="sac-bi">SAC BI (Users, minimum 25)</label>
-                <input type="number" id="sac-bi" name="sac-bi" min="0" value="0" placeholder="Integer">
+            <div class="input-group">
+                <label for="datasphereDEV">Datasphere DEV (CU)</label>
+                <input type="number" id="datasphereDEV" min="0" value="0" onfocus="showDatasphereReference()" onchange="updateResults()">
             </div>
-             <div class="form-group">
-                <label for="sac-plan-std">SAC Planning Standard (Users, minimum 10)</label>
-                <input type="number" id="sac-plan-std" name="sac-plan-std" min="0" value="0" placeholder="Integer">
+            <div class="input-group">
+                <label for="sacBI">SAC BI (Users, minimum 25)</label>
+                <input type="number" id="sacBI" min="0" value="0" onfocus="showReference('BDC_Core_SAC.png')" onchange="updateResults()">
             </div>
-             <div class="form-group">
-                <label for="sac-plan-pro">SAC Planning Professional (Users, minimum 1)</label>
-                <input type="number" id="sac-plan-pro" name="sac-plan-pro" min="0" value="0" placeholder="Integer">
+            <div class="input-group">
+                <label for="sacPlanningStandard">SAC Planning Standard (Users, minimum 10)</label>
+                <input type="number" id="sacPlanningStandard" min="0" value="0" onfocus="showReference('BDC_Core_SAC.png')" onchange="updateResults()">
             </div>
-             <div class="form-group">
-                 <label for="sac-test">SAC Test tenant (Users, minimum 20)</label>
-                <input type="number" id="sac-test" name="sac-test" min="0" value="0" placeholder="Integer">
+            <div class="input-group">
+                <label for="sacPlanningProfessional">SAC Planning Professional (Users, minimum 1)</label>
+                <input type="number" id="sacPlanningProfessional" min="0" value="0" onfocus="showReference('BDC_Core_SAC.png')" onchange="updateResults()">
             </div>
-            <div class="form-group">
-                <label for="bw-pce">BW PCE (CU)</label>
-                <input type="number" id="bw-pce" name="bw-pce" min="0" value="0" placeholder="Integer">
+            <div class="input-group">
+                <label for="sacTestTenant">SAC Test tenant (Users, minimum 20)</label>
+                <input type="number" id="sacTestTenant" min="0" value="0" onfocus="showReference('BDC_Core_SAC.png')" onchange="updateResults()">
             </div>
-        </div>
-
-        <div id="output-section-1" class="output-section hidden">
-             <div class="output-item">
-                8019233 : Insight App - Core Enterprise Analytics (FUE)
-                <strong id="output-core-enterprise-fue">0</strong>
-             </div>
-        </div>
-
-        <div id="output-section-2" class="output-section">
-             <div class="output-item main-output-label">
-                 8019271 : SAP Business Data Cloud Core Capacity (CU)
-                 <strong id="output-bdc-total">0</strong>
+            <div class="input-group">
+                <label for="bwPCE">BW PCE (CU)</label>
+                <input type="number" id="bwPCE" min="0" value="0" onfocus="showBWReference()" onchange="updateResults()">
             </div>
-            <div class="output-item">
-                - Auto-Attach of BDC CU based on Tier (CU)
-                <strong id="output-sub1-auto-attach">0</strong>
-                <span id="output-sub1-note" class="output-note hidden"></span>
-            </div>
-            <div class="output-item">
-                - Datasphere (CU)
-                <strong id="output-sub2-datasphere">0</strong>
-            </div>
-            <div class="output-item">
-                - SAC BI (CU)
-                <strong id="output-sub3-sac-bi">0</strong>
-                 <span id="output-sub3-note" class="output-note hidden"></span>
-            </div>
-             <div class="output-item">
-                - SAC Planning Standard (CU)
-                <strong id="output-sub4-sac-plan-std">0</strong>
-                 <span id="output-sub4-note" class="output-note hidden"></span>
-            </div>
-             <div class="output-item">
-                - SAC Planning Professional (CU)
-                <strong id="output-sub5-sac-plan-pro">0</strong>
-                 <span id="output-sub5-note" class="output-note hidden"></span>
-            </div>
-            <div class="output-item">
-                - SAC Test tenant (CU)
-                 <strong id="output-sub6-sac-test">0</strong>
-                 <span id="output-sub6-note" class="output-note hidden"></span>
-            </div>
-             <div class="output-item">
-                 - BW PCE (CU)
-                 <strong id="output-sub7-bw-pce">0</strong>
+            <div class="input-group">
+                <label for="databricks">Databricks (T-shirt Sizing)</label>
+                <select id="databricks" onfocus="showReference('BDC_Core_Databricks.png')" onchange="updateResults()">
+                    <option value="n/a">n/a</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                </select>
             </div>
         </div>
+        
+        <div class="output-section">
+            <div id="insightAppsResults" style="display: none;">
+                <div class="result-item" id="coreEnterpriseResult" style="display: none;">
+                    <div class="label">8019233 : Insight App - Core Enterprise Analytics (FUE)</div>
+                    <div class="value" id="coreEnterpriseValue">0</div>
+                </div>
+                <div class="result-item" id="customerManagedResult" style="display: none;">
+                    <div class="label">8019709 : Customer-Managed Data Products (CU - Flat Fee)</div>
+                    <div class="value">1,000</div>
+                </div>
+            </div>
+            
+            <div class="result-item">
+                <div class="label">8019271 : SAP Business Data Cloud Core Capacity (CU)</div>
+                <div class="value" id="totalCUValue">0</div>
+            </div>
+            
+            <div class="sub-item result-item">
+                <div class="label"> - Auto-Attach of BDC CU based on Tier (CU)</div>
+                <div class="value" id="autoAttachCUValue">0</div>
+                <div class="note" id="autoAttachTierNote" style="display: none;"></div>
+            </div>
+            
+            <div class="sub-item result-item">
+                <div class="label"> - Datasphere (CU)</div>
+                <div class="value" id="datasphereCUValue">0</div>
+            </div>
+            
+            <div class="sub-item result-item">
+                <div class="label"> - SAC BI (CU)</div>
+                <div class="value" id="sacBICUValue">0</div>
+                <div class="note" id="sacBINote" style="display: none;"></div>
+            </div>
+            
+            <div class="sub-item result-item">
+                <div class="label"> - SAC Planning Standard (CU)</div>
+                <div class="value" id="sacPlanningStandardCUValue">0</div>
+                <div class="note" id="sacPlanningStandardNote" style="display: none;"></div>
+            </div>
+            
+            <div class="sub-item result-item">
+                <div class="label"> - SAC Planning Professional (CU)</div>
+                <div class="value" id="sacPlanningProfessionalCUValue">0</div>
+                <div class="note" id="sacPlanningProfessionalNote" style="display: none;"></div>
+            </div>
+            
+            <div class="sub-item result-item">
+                <div class="label"> - SAC Test tenant (CU)</div>
+                <div class="value" id="sacTestTenantCUValue">0</div>
+                <div class="note" id="sacTestTenantNote" style="display: none;"></div>
+            </div>
+            
+            <div class="sub-item result-item">
+                <div class="label"> - BW PCE (CU)</div>
+                <div class="value" id="bwPCECUValue">0</div>
+            </div>
+            
+            <div class="sub-item result-item">
+                <div class="label"> - SAP Databricks (CU)</div>
+                <div class="value" id="databricksCUValue">0</div>
+                <div class="note" id="databricksNote" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div class="reference-section">
+            <img id="referenceImage" src="BDC_Packaging.png" alt="BDC Packaging Reference" style="max-width: 100%;">
+            <div id="referenceLinks" style="margin-top: 10px;"></div>
+        </div>
+    </div>
 
-    </div><script>
-        // --- Data Definitions ---
-        const tierData = [
-            { tier: 'Tier 1', lower: 60,    upper: 135,   units: 15600 },
-            { tier: 'Tier 2', lower: 136,   upper: 550,   units: 30500 },
-            { tier: 'Tier 3', lower: 551,   upper: 1000,  units: 39800 },
-            { tier: 'Tier 4', lower: 1001,  upper: 2000,  units: 54500 },
-            { tier: 'Tier 5', lower: 2001,  upper: 4000,  units: 69200 },
-            { tier: 'Tier 6', lower: 4001,  upper: 6000,  units: 69300 },
-            { tier: 'Tier 7', lower: 6001,  upper: 12000, units: 93300 },
-            { tier: 'Tier 8', lower: 12001, upper: 25000, units: 159900 },
-            { tier: 'Tier 9', lower: 25001, upper: Infinity, units: 221200 },
+    <script>
+        // Tier Validation Table
+        const tierTable = [
+            { tier: 1, lowerBound: 60, upperBound: 84, units: 5700 },
+            { tier: 2, lowerBound: 85, upperBound: 109, units: 6150 },
+            { tier: 3, lowerBound: 110, upperBound: 135, units: 6600 },
+            { tier: 4, lowerBound: 136, upperBound: 270, units: 9250 },
+            { tier: 5, lowerBound: 271, upperBound: 410, units: 10000 },
+            { tier: 6, lowerBound: 411, upperBound: 550, units: 11500 },
+            { tier: 7, lowerBound: 551, upperBound: 750, units: 14350 },
+            { tier: 8, lowerBound: 751, upperBound: 1000, units: 15750 },
+            { tier: 9, lowerBound: 1001, upperBound: 2000, units: 21750 },
+            { tier: 10, lowerBound: 2001, upperBound: 4000, units: 28000 },
+            { tier: 11, lowerBound: 4001, upperBound: 6000, units: 38000 },
+            { tier: 12, lowerBound: 6001, upperBound: 12000, units: 51350 },
+            { tier: 13, lowerBound: 12001, upperBound: 25000, units: 59500 },
+            { tier: 14, lowerBound: 25001, upperBound: Infinity, units: 71800 }
         ];
-
-        const sacBiData = [
-            { minUsers: 25,   maxUsers: 200,    cuValue: 38.63 },
-            { minUsers: 201,  maxUsers: 500,    cuValue: 21.60 },
-            { minUsers: 501,  maxUsers: 1000,   cuValue: 17.38 },
-            { minUsers: 1001, maxUsers: 3000,   cuValue: 15.95 },
-            { minUsers: 3001, maxUsers: 5000,   cuValue: 12.64 },
-            { minUsers: 5001, maxUsers: Infinity, cuValue: 10.54 },
+        
+        // SAC BI Table
+        const sacBITable = [
+            { lowerBound: 25, upperBound: 200, capacityUnitValue: 25.60 },
+            { lowerBound: 201, upperBound: 500, capacityUnitValue: 21.60 },
+            { lowerBound: 501, upperBound: 1000, capacityUnitValue: 17.38 },
+            { lowerBound: 1001, upperBound: 3000, capacityUnitValue: 15.95 },
+            { lowerBound: 3001, upperBound: 5000, capacityUnitValue: 12.64 },
+            { lowerBound: 5001, upperBound: Infinity, capacityUnitValue: 10.54 }
         ];
-
-        const sacPlanStdData = [
-            { minUsers: 10,   maxUsers: 200,    cuValue: 119.80 },
-            { minUsers: 201,  maxUsers: 500,    cuValue: 57.98 },
-            { minUsers: 501,  maxUsers: 1000,   cuValue: 46.70 },
-            { minUsers: 1001, maxUsers: Infinity, cuValue: 41.57 },
+        
+        // SAC Planning Standard Table
+        const sacPlanningStandardTable = [
+            { lowerBound: 10, upperBound: 200, capacityUnitValue: 72.85 },
+            { lowerBound: 201, upperBound: 500, capacityUnitValue: 57.98 },
+            { lowerBound: 501, upperBound: 1000, capacityUnitValue: 46.70 },
+            { lowerBound: 1001, upperBound: Infinity, capacityUnitValue: 41.57 }
         ];
-
-        const sacPlanProCU = 820.43;
-        const sacTestCU = 47.05;
-
-        const MIN_SAC_BI_USERS = 25;
-        const MIN_SAC_PLAN_STD_USERS = 10;
-        const MIN_SAC_PLAN_PRO_USERS = 1;
-        const MIN_SAC_TEST_USERS = 20;
-
-        // --- DOM Elements ---
-        const coreEnterpriseCheckbox = document.getElementById('core-enterprise-analytics');
-        const risePceGroup = document.getElementById('rise-pce-group');
-        const risePceInput = document.getElementById('rise-pce-fue');
-        const dsProdInput = document.getElementById('ds-prod');
-        const dsQaInput = document.getElementById('ds-qa');
-        const dsDevInput = document.getElementById('ds-dev');
-        const sacBiInput = document.getElementById('sac-bi');
-        const sacPlanStdInput = document.getElementById('sac-plan-std');
-        const sacPlanProInput = document.getElementById('sac-plan-pro');
-        const sacTestInput = document.getElementById('sac-test');
-        const bwPceInput = document.getElementById('bw-pce');
-
-        const outputSection1 = document.getElementById('output-section-1');
-        const outputCoreEnterpriseFue = document.getElementById('output-core-enterprise-fue');
-        const outputBdcTotal = document.getElementById('output-bdc-total');
-        const outputSub1AutoAttach = document.getElementById('output-sub1-auto-attach');
-        const outputSub1Note = document.getElementById('output-sub1-note');
-        const outputSub2Datasphere = document.getElementById('output-sub2-datasphere');
-        const outputSub3SacBi = document.getElementById('output-sub3-sac-bi');
-        const outputSub3Note = document.getElementById('output-sub3-note');
-        const outputSub4SacPlanStd = document.getElementById('output-sub4-sac-plan-std');
-        const outputSub4Note = document.getElementById('output-sub4-note');
-        const outputSub5SacPlanPro = document.getElementById('output-sub5-sac-plan-pro');
-        const outputSub5Note = document.getElementById('output-sub5-note');
-        const outputSub6SacTest = document.getElementById('output-sub6-sac-test');
-        const outputSub6Note = document.getElementById('output-sub6-note');
-        const outputSub7BwPce = document.getElementById('output-sub7-bw-pce');
-
-        // --- Helper Functions ---
-        function getIntValue(element, defaultValue = 0) {
-            const value = parseInt(element.value, 10);
-            return isNaN(value) || value < 0 ? defaultValue : value;
-        }
-
-        function formatInt(value) {
-            // Formats number with commas and ensures it's an integer
-             return Math.ceil(value).toLocaleString('en-US');
-        }
-
-        function getTierInfo(fueValue) {
-            if (!fueValue || fueValue <= 0) {
-                return { tier: null, units: 0 };
+        
+        // SAC Planning Professional Table
+        const sacPlanningProfessionalTable = [
+            { lowerBound: 1, upperBound: Infinity, capacityUnitValue: 820.43 }
+        ];
+        
+        // SAC Test Tenant Table
+        const sacTestTenantTable = [
+            { lowerBound: 20, upperBound: Infinity, capacityUnitValue: 47.05 }
+        ];
+        
+        // Databricks T-shirt Sizing Table
+        const databricksTable = {
+            "n/a": { cu: 0, details: "" },
+            "S": { 
+                cu: 2000, 
+                details: "Total Data Size: 100GB, ETL/ML Developers: 2, Daily ETL volume: 10GB batch, Total ML models: 20" 
+            },
+            "M": { 
+                cu: 5000, 
+                details: "Total Data Size: 100GB, ETL/ML Developers: 10, Daily ETL volume: 10GB batch, Total ML models: 40" 
+            },
+            "L": { 
+                cu: 10000, 
+                details: "Total Data Size: 1TB, ETL/ML Developers: 2, Daily ETL volume: 10GB streaming, BI Dashboards: 10, SQL Analysts: 10 analysts 6hrs/day, Total ML models: 20, Real time inference GPU models: 10, Peak QPS of real time inference: 5 QPS for 8hrs/day" 
+            },
+            "XL": { 
+                cu: 50000, 
+                details: "Total Data Size: 1TB, ETL/ML Developers: 10, Daily ETL volume: 100GB streaming, BI Dashboards: 50, SQL Analysts: 25 analysts 6hrs/day, Total ML models: 100, Real time inference GPU models: 25, Peak QPS of real time inference: 100 QPS for 8hrs/day" 
+            },
+            "XXL": { 
+                cu: 100000, 
+                details: "Total Data Size: 5TB, ETL/ML Developers: 10, Daily ETL volume: 100GB streaming, BI Dashboards: 50, SQL Analysts: 25 analysts 6hrs/day, Total ML models: 50, Real time inference GPU models: 15, Peak QPS of real time inference: 100 QPS for 8hrs/day" 
             }
-            for (const tier of tierData) {
-                if (fueValue >= tier.lower && fueValue <= tier.upper) {
-                    return { tier: tier.tier, units: tier.units };
+        };
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up the Core Enterprise Analytics checkbox to show/hide the RISE PCE input
+            document.getElementById('coreEnterpriseAnalytics').addEventListener('change', function() {
+                document.getElementById('riseGroup').style.display = this.checked ? 'flex' : 'none';
+                updateResults();
+            });
+            
+            // Initialize results
+            updateResults();
+        });
+        
+        // Show reference image and links
+        function showReference(imageName) {
+            document.getElementById('referenceImage').src = imageName;
+            document.getElementById('referenceLinks').innerHTML = '';
+        }
+        
+        // Show Datasphere reference
+        function showDatasphereReference() {
+            document.getElementById('referenceImage').src = 'BDC_Core_Datasphere.png';
+            document.getElementById('referenceLinks').innerHTML = '<a href="https://dwc-pricing-calculator-sac-saceu10.cfapps.eu10.hana.ondemand.com/" target="_blank">SAP Datasphere Capacity Unit Estimator</a>';
+        }
+        
+        // Show BW reference
+        function showBWReference() {
+            document.getElementById('referenceImage').src = 'BDC_Core_BW.png';
+            document.getElementById('referenceLinks').innerHTML = '<a href="https://d.dam.sap.com/s/i/a/fWz4gcY?rc=10&doi=SAP1181174" target="_blank">BDC-BW Configurator XLS</a>';
+        }
+        
+        // Calculate results
+        function updateResults() {
+            // Get input values
+            const coreEnterpriseAnalytics = document.getElementById('coreEnterpriseAnalytics').checked;
+            const risePCE = parseInt(document.getElementById('risePCE').value) || 0;
+            const customerManagedDataProducts = document.getElementById('customerManagedDataProducts').checked;
+            const datasphereProduction = parseInt(document.getElementById('datasphereProduction').value) || 0;
+            const datasphereQA = parseInt(document.getElementById('datasphereQA').value) || 0;
+            const datasphereDEV = parseInt(document.getElementById('datasphereDEV').value) || 0;
+            const sacBI = parseInt(document.getElementById('sacBI').value) || 0;
+            const sacPlanningStandard = parseInt(document.getElementById('sacPlanningStandard').value) || 0;
+            const sacPlanningProfessional = parseInt(document.getElementById('sacPlanningProfessional').value) || 0;
+            const sacTestTenant = parseInt(document.getElementById('sacTestTenant').value) || 0;
+            const bwPCE = parseInt(document.getElementById('bwPCE').value) || 0;
+            const databricksSize = document.getElementById('databricks').value;
+            
+            // Update Insight Apps Section
+            document.getElementById('insightAppsResults').style.display = (coreEnterpriseAnalytics || customerManagedDataProducts) ? 'block' : 'none';
+            
+            // Update Core Enterprise Analytics result
+            document.getElementById('coreEnterpriseResult').style.display = coreEnterpriseAnalytics ? 'flex' : 'none';
+            document.getElementById('coreEnterpriseValue').textContent = coreEnterpriseAnalytics ? risePCE : 0;
+            
+            // Update Customer-Managed Data Products result
+            document.getElementById('customerManagedResult').style.display = customerManagedDataProducts ? 'flex' : 'none';
+            
+            // Calculate Auto-Attach CU
+            let autoAttachCU = 0;
+            let tierInfo = '';
+            
+            if (coreEnterpriseAnalytics && risePCE > 0) {
+                for (const tier of tierTable) {
+                    if (risePCE >= tier.lowerBound && risePCE <= tier.upperBound) {
+                        autoAttachCU = tier.units;
+                        tierInfo = `Tier ${tier.tier} (${tier.lowerBound}-${tier.upperBound} FUE)`;
+                        break;
+                    }
                 }
             }
-            return { tier: null, units: 0 }; // Should not happen with Infinity in last tier
-        }
-
-         function getSacCuValue(users, sacDataTable, minUsers) {
-            if (users <= 0) return { users: 0, cuValue: 0 };
-
-            // Enforce minimum user count for calculation if input is > 0
-            const effectiveUsers = users < minUsers ? minUsers : users;
-
-            for (const tier of sacDataTable) {
-                if (effectiveUsers >= tier.minUsers && effectiveUsers <= tier.maxUsers) {
-                    return { users: effectiveUsers, cuValue: tier.cuValue };
+            
+            document.getElementById('autoAttachCUValue').textContent = autoAttachCU.toLocaleString();
+            if (autoAttachCU > 0) {
+                document.getElementById('autoAttachTierNote').textContent = tierInfo;
+                document.getElementById('autoAttachTierNote').style.display = 'block';
+            } else {
+                document.getElementById('autoAttachTierNote').style.display = 'none';
+            }
+            
+            // Calculate Datasphere CU
+            const datasphereCU = datasphereProduction + datasphereQA + datasphereDEV;
+            document.getElementById('datasphereCUValue').textContent = datasphereCU.toLocaleString();
+            
+            // Calculate SAC BI CU
+            let sacBICU = 0;
+            let sacBICapacityUnitValue = 0;
+            
+            if (sacBI >= 25) {
+                for (const tier of sacBITable) {
+                    if (sacBI >= tier.lowerBound && sacBI <= tier.upperBound) {
+                        sacBICapacityUnitValue = tier.capacityUnitValue;
+                        sacBICU = Math.ceil(sacBI * sacBICapacityUnitValue);
+                        break;
+                    }
                 }
             }
-            return { users: effectiveUsers, cuValue: 0 }; // Should not happen with Infinity
-        }
-
-        function updateNoteVisibility(noteElement, value, textPrefix) {
-            if (value > 0 && textPrefix) {
-                noteElement.textContent = `(${textPrefix})`;
-                noteElement.classList.remove('hidden');
+            
+            document.getElementById('sacBICUValue').textContent = sacBICU.toLocaleString();
+            if (sacBICU > 0) {
+                document.getElementById('sacBINote').textContent = `Capacity Unit Value = ${sacBICapacityUnitValue}`;
+                document.getElementById('sacBINote').style.display = 'block';
             } else {
-                noteElement.textContent = '';
-                noteElement.classList.add('hidden');
+                document.getElementById('sacBINote').style.display = 'none';
             }
-        }
-
-
-        // --- Calculation Logic ---
-        function calculateOutput() {
-            // Read Input Values
-            const isCoreEnterpriseChecked = coreEnterpriseCheckbox.checked;
-            const risePceFue = getIntValue(risePceInput);
-            const dsProd = getIntValue(dsProdInput);
-            const dsQa = getIntValue(dsQaInput);
-            const dsDev = getIntValue(dsDevInput);
-            const sacBiUsersRaw = getIntValue(sacBiInput);
-            const sacPlanStdUsersRaw = getIntValue(sacPlanStdInput);
-            const sacPlanProUsersRaw = getIntValue(sacPlanProInput);
-            const sacTestUsersRaw = getIntValue(sacTestInput);
-            const bwPce = getIntValue(bwPceInput);
-
-             // --- Output Section 1 ---
-             if (isCoreEnterpriseChecked) {
-                 outputSection1.classList.remove('hidden');
-                 outputCoreEnterpriseFue.textContent = formatInt(risePceFue);
-             } else {
-                 outputSection1.classList.add('hidden');
-                 outputCoreEnterpriseFue.textContent = '0'; // Reset even if hidden
+            
+            // Calculate SAC Planning Standard CU
+            let sacPlanningStandardCU = 0;
+            let sacPlanningStandardCapacityUnitValue = 0;
+            
+            if (sacPlanningStandard >= 10) {
+                for (const tier of sacPlanningStandardTable) {
+                    if (sacPlanningStandard >= tier.lowerBound && sacPlanningStandard <= tier.upperBound) {
+                        sacPlanningStandardCapacityUnitValue = tier.capacityUnitValue;
+                        sacPlanningStandardCU = Math.ceil(sacPlanningStandard * sacPlanningStandardCapacityUnitValue);
+                        break;
+                    }
+                }
             }
-
-            // --- Output Section 2 Calculations ---
-
-            // Sub-item 1: Auto-Attach BDC CU
-            const tierInfo = getTierInfo(isCoreEnterpriseChecked ? risePceFue : 0); // Only calculate if checkbox is checked
-            const sub1Result = tierInfo.units;
-            outputSub1AutoAttach.textContent = formatInt(sub1Result);
-            updateNoteVisibility(outputSub1Note, sub1Result, tierInfo.tier);
-
-
-            // Sub-item 2: Datasphere
-            const sub2Result = dsProd + dsQa + dsDev;
-            outputSub2Datasphere.textContent = formatInt(sub2Result);
-
-            // Sub-item 3: SAC BI
-            const sacBiCalcInfo = getSacCuValue(sacBiUsersRaw, sacBiData, MIN_SAC_BI_USERS);
-            const sub3Result = sacBiUsersRaw > 0 ? Math.ceil(sacBiCalcInfo.users * sacBiCalcInfo.cuValue) : 0;
-            outputSub3SacBi.textContent = formatInt(sub3Result);
-            updateNoteVisibility(outputSub3Note, sub3Result, `Capacity Unit Value = ${sacBiCalcInfo.cuValue.toFixed(2)}`);
-
-
-             // Sub-item 4: SAC Planning Standard
-            const sacPlanStdCalcInfo = getSacCuValue(sacPlanStdUsersRaw, sacPlanStdData, MIN_SAC_PLAN_STD_USERS);
-            const sub4Result = sacPlanStdUsersRaw > 0 ? Math.ceil(sacPlanStdCalcInfo.users * sacPlanStdCalcInfo.cuValue) : 0;
-            outputSub4SacPlanStd.textContent = formatInt(sub4Result);
-            updateNoteVisibility(outputSub4Note, sub4Result, `Capacity Unit Value = ${sacPlanStdCalcInfo.cuValue.toFixed(2)}`);
-
-
-            // Sub-item 5: SAC Planning Professional
-            let sub5Result = 0;
-            let sacPlanProEffectiveUsers = 0;
-            if (sacPlanProUsersRaw > 0) {
-                 sacPlanProEffectiveUsers = sacPlanProUsersRaw < MIN_SAC_PLAN_PRO_USERS ? MIN_SAC_PLAN_PRO_USERS : sacPlanProUsersRaw;
-                sub5Result = Math.ceil(sacPlanProEffectiveUsers * sacPlanProCU);
-            }
-             outputSub5SacPlanPro.textContent = formatInt(sub5Result);
-            updateNoteVisibility(outputSub5Note, sub5Result, `Capacity Unit Value = ${sacPlanProCU.toFixed(2)}`);
-
-
-            // Sub-item 6: SAC Test tenant
-            let sub6Result = 0;
-             let sacTestEffectiveUsers = 0;
-             if (sacTestUsersRaw > 0) {
-                 sacTestEffectiveUsers = sacTestUsersRaw < MIN_SAC_TEST_USERS ? MIN_SAC_TEST_USERS : sacTestUsersRaw;
-                 sub6Result = Math.ceil(sacTestEffectiveUsers * sacTestCU);
-             }
-            outputSub6SacTest.textContent = formatInt(sub6Result);
-            updateNoteVisibility(outputSub6Note, sub6Result, `Capacity Unit Value = ${sacTestCU.toFixed(2)}`);
-
-
-            // Sub-item 7: BW PCE
-            const sub7Result = bwPce;
-            outputSub7BwPce.textContent = formatInt(sub7Result);
-
-
-            // Final BDC Core Capacity Calculation
-             const sumSub2to7 = sub2Result + sub3Result + sub4Result + sub5Result + sub6Result + sub7Result;
-             const finalBdcResult = sumSub2to7 > sub1Result ? sumSub2to7 : sub1Result;
-
-             outputBdcTotal.textContent = formatInt(finalBdcResult);
-
-        }
-
-        // --- Event Listeners ---
-        coreEnterpriseCheckbox.addEventListener('change', () => {
-            if (coreEnterpriseCheckbox.checked) {
-                 risePceGroup.classList.remove('hidden');
+            
+            document.getElementById('sacPlanningStandardCUValue').textContent = sacPlanningStandardCU.toLocaleString();
+            if (sacPlanningStandardCU > 0) {
+                document.getElementById('sacPlanningStandardNote').textContent = `Capacity Unit Value = ${sacPlanningStandardCapacityUnitValue}`;
+                document.getElementById('sacPlanningStandardNote').style.display = 'block';
             } else {
-                 risePceGroup.classList.add('hidden');
-                 // Optionally clear the FUE input when unchecked
-                 // risePceInput.value = '0';
+                document.getElementById('sacPlanningStandardNote').style.display = 'none';
             }
-            calculateOutput(); // Recalculate when checkbox changes
-        });
-
-         // Add listeners to all input fields
-         const inputs = [
-            risePceInput, dsProdInput, dsQaInput, dsDevInput,
-            sacBiInput, sacPlanStdInput, sacPlanProInput, sacTestInput,
-            bwPceInput
-        ];
-
-        inputs.forEach(input => {
-             input.addEventListener('input', calculateOutput);
-        });
-
-
-        // --- Initial Calculation on Load ---
-        calculateOutput();
-
+            
+            // Calculate SAC Planning Professional CU
+            let sacPlanningProfessionalCU = 0;
+            let sacPlanningProfessionalCapacityUnitValue = 0;
+            
+            if (sacPlanningProfessional >= 1) {
+                sacPlanningProfessionalCapacityUnitValue = sacPlanningProfessionalTable[0].capacityUnitValue;
+                sacPlanningProfessionalCU = Math.ceil(sacPlanningProfessional * sacPlanningProfessionalCapacityUnitValue);
+            }
+            
+            document.getElementById('sacPlanningProfessionalCUValue').textContent = sacPlanningProfessionalCU.toLocaleString();
+            if (sacPlanningProfessionalCU > 0) {
+                document.getElementById('sacPlanningProfessionalNote').textContent = `Capacity Unit Value = ${sacPlanningProfessionalCapacityUnitValue}`;
+                document.getElementById('sacPlanningProfessionalNote').style.display = 'block';
+            } else {
+                document.getElementById('sacPlanningProfessionalNote').style.display = 'none';
+            }
+            
+            // Calculate SAC Test Tenant CU
+            let sacTestTenantCU = 0;
+            let sacTestTenantCapacityUnitValue = 0;
+            
+            if (sacTestTenant >= 20) {
+                sacTestTenantCapacityUnitValue = sacTestTenantTable[0].capacityUnitValue;
+                sacTestTenantCU = Math.ceil(sacTestTenant * sacTestTenantCapacityUnitValue);
+            }
+            
+            document.getElementById('sacTestTenantCUValue').textContent = sacTestTenantCU.toLocaleString();
+            if (sacTestTenantCU > 0) {
+                document.getElementById('sacTestTenantNote').textContent = `Capacity Unit Value = ${sacTestTenantCapacityUnitValue}`;
+                document.getElementById('sacTestTenantNote').style.display = 'block';
+            } else {
+                document.getElementById('sacTestTenantNote').style.display = 'none';
+            }
+            
+            // Update BW PCE CU
+            document.getElementById('bwPCECUValue').textContent = bwPCE.toLocaleString();
+            
+            // Calculate Databricks CU
+            const databricksCU = databricksTable[databricksSize].cu;
+            document.getElementById('databricksCUValue').textContent = databricksCU.toLocaleString();
+            
+            if (databricksCU > 0) {
+                document.getElementById('databricksNote').textContent = databricksTable[databricksSize].details;
+                document.getElementById('databricksNote').style.display = 'block';
+            } else {
+                document.getElementById('databricksNote').style.display = 'none';
+            }
+            
+            // Calculate Total CU
+            const totalCU = autoAttachCU + datasphereCU + sacBICU + sacPlanningStandardCU + 
+                          sacPlanningProfessionalCU + sacTestTenantCU + bwPCE + databricksCU;
+            document.getElementById('totalCUValue').textContent = totalCU.toLocaleString();
+        }
     </script>
-
 </body>
 </html>
